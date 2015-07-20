@@ -42,13 +42,6 @@ var ToolbarComponent = React.createClass({
       tabId: chrome.devtools.inspectedWindow.tabId
     });
   },
-  toggleStoreState: function () {
-    chrome.extension.sendMessage({
-      action: 'code',
-      content: 'var event = new Event("cerebral.dev.toggleStoreState");window.dispatchEvent(event);',
-      tabId: chrome.devtools.inspectedWindow.tabId
-    });
-  },
   resetStore: function () {
     chrome.extension.sendMessage({
       action: 'code',
@@ -80,18 +73,6 @@ var ToolbarComponent = React.createClass({
             style: ResetButton,
             onClick: this.resetStore,
           }, 'reset')
-        ),
-        DOM.li({
-            style: ToolbarRightItem
-          },
-          DOM.label(null, DOM.input({
-            type: 'checkbox',
-            style: {
-              margin: '3px'
-            },
-            onChange: this.props.toggleStoreState,
-            checked: this.props.willStoreState
-          }), 'store')
         ),
         DOM.li({
             style: ToolbarRightItem

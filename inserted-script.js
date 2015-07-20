@@ -1,17 +1,17 @@
 // This is included and executed in the inspected page
 (function (window) {
 
-	var isInit = false;
+	if (window.CEREBRAL_INIT) {
+		return;
+	}
 
 	window.addEventListener('cerebral.dev.initialized', function (event) {
 
-		if (isInit) {
+		if (window.CEREBRAL_INIT) {
 			return;
 		}
 
-		isInit = true;
-
-		console.log(event.detail);
+		window.CEREBRAL_INIT = true;
 		chrome.extension.sendMessage(event.detail, function(message){});
 
 		window.addEventListener('cerebral.dev.update', function (event) {
