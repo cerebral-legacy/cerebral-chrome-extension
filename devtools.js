@@ -3,8 +3,8 @@
 // chrome.extension.*
 
 // Create a tab in the devtools area
+var hasListener = false;
 chrome.devtools.panels.create("Cerebral", "toast.png", "panel.html", function(panel) {
-
   panel.onShown.addListener(function () {
     chrome.extension.sendMessage({
       action: 'script',
@@ -12,5 +12,4 @@ chrome.devtools.panels.create("Cerebral", "toast.png", "panel.html", function(pa
       tabId: chrome.devtools.inspectedWindow.tabId
     });
   });
-
 });

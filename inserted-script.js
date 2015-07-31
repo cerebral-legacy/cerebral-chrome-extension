@@ -1,10 +1,12 @@
 // This is included and executed in the inspected page
 (function (window) {
 
-	if (window.CEREBRAL_INIT) {
+	if (window.CEREBRAL_INIT || window.CEREBRAL_DEBUGGER_INJECTED) {
 		return;
 	}
 
+	window.CEREBRAL_DEBUGGER_INJECTED = true;
+	console.log('Is injected!!');
 	window.addEventListener('cerebral.dev.initialized', function (event) {
 
 		if (window.CEREBRAL_INIT) {
