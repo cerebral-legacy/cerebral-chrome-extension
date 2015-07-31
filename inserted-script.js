@@ -15,6 +15,10 @@
 		chrome.extension.sendMessage(event.detail, function(message){});
 
 		window.addEventListener('cerebral.dev.update', function (event) {
+			if (!event.detail) {
+				throw new Error('You have to pass a serializeable object to a signal. Did you pass a mouse event maybe?');
+				return;
+			}
 			chrome.extension.sendMessage(event.detail, function(message){});
 		});
 

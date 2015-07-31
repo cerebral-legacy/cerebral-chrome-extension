@@ -3,8 +3,8 @@
 // chrome.extension.*
 
 // Create a tab in the devtools area
-chrome.devtools.panels.create("DemoPanel", "toast.png", "panel.html", function(panel) {
-  
+chrome.devtools.panels.create("Cerebral", "toast.png", "panel.html", function(panel) {
+
   panel.onShown.addListener(function () {
     chrome.extension.sendMessage({
       action: 'script',

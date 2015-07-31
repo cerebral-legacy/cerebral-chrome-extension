@@ -60,7 +60,6 @@ var MutationComponent = React.createClass({
   render: function() {
 
     var mutation = this.props.mutation;
-    console.log(mutation);
     var mutationArgs = mutation.args.slice();
     var path = mutation.path;
     var color = mutationColors[mutation.name];

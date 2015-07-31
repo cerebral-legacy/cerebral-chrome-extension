@@ -52,7 +52,7 @@ var RangeComponent = React.createClass({
     window.removeEventListener('mousemove', this.trackMouse);
   },
   setMaxLeft: function () {
-    this.maxLeft = this.refs.range ? this.refs.range.getDOMNode().offsetWidth : 0;
+    this.maxLeft = document.body.offsetWidth - 40;
   },
   setHovering: function() {
     this.setState({
@@ -68,6 +68,7 @@ var RangeComponent = React.createClass({
     if (this.props.disabled) {
       return;
     }
+    console.log('IS TRACKING!');
     if (this.refs.node && event.target === this.refs.node.getDOMNode()) {
       document.body.style.userSelect = 'none';
       document.body.style.webkitUserSelect = 'none';

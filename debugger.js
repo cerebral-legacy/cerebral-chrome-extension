@@ -13,10 +13,6 @@ var debuggerStyle = {
 };
 
 var DebuggerComponent = React.createClass({
-  getValue: function (path) {
-    // Grab state with path
-    return this.props.state;
-  },
   render: function () {
 
       var currentSignalIndex = this.props.currentSignalIndex;
@@ -32,15 +28,8 @@ var DebuggerComponent = React.createClass({
           currentSignalIndex: currentSignalIndex,
           totalSignals: signals.length,
           reset: this.reset,
-          isExecutingAsync: this.props.isExecutingAsync,
-          //recorder: this.state.recorder,
-          isRemembering: this.props.isRemembering
-        }),
-        React.createElement(SliderComponent, {
-          isExecutingAsync: this.props.isExecutingAsync,
-          willKeepState: this.props.willKeepState,
-          value: currentSignalIndex + 1,
           steps: signals.length,
+          isExecutingAsync: this.props.isExecutingAsync,
           //recorder: this.state.recorder,
           isRemembering: this.props.isRemembering
         }),

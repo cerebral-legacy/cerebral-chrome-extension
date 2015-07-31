@@ -25,6 +25,7 @@ var SliderComponent = React.createClass({
       content: 'var event = new CustomEvent("cerebral.dev.remember", {detail: ' + (index - 1) + '});window.dispatchEvent(event);',
       tabId: chrome.devtools.inspectedWindow.tabId
     });
+    this.props.optimisticRangeUpdate(index);
   },
   render: function() {
     return DOM.div({
@@ -33,7 +34,7 @@ var SliderComponent = React.createClass({
       React.createElement(RangeComponent, {
         onChange: this.remember,
         disabled: !this.props.isRemembering && (this.props.isExecutingAsync/* || this.props.recorder.isPlaying || this.props.recorder.isRecording*/),
-        value: this.props.value,
+        value: this.props.value || 0,
         steps: this.props.steps
       })
     )

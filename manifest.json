@@ -1,7 +1,7 @@
 {
-    "name": "DevToolsPanel",
-    "version": "0.1",
-    "description": "A bare-bones example of communication between devtools and an inspected page",
+    "name": "Cerebral Debugger",
+    "version": "0.4",
+    "description": "A debugger for web app state control and insight",
     "devtools_page": "devtools.html",
     "background": {
         "scripts": [
