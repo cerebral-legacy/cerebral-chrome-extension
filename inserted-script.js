@@ -6,7 +6,7 @@
 	}
 
 	window.CEREBRAL_DEBUGGER_INJECTED = true;
-	console.log('Is injected!!');
+
 	window.addEventListener('cerebral.dev.initialized', function (event) {
 
 		if (window.CEREBRAL_INIT) {
