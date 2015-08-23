@@ -8,7 +8,8 @@ var ToolbarStyle = {
 
 var ResetButton = {
   textDecoration: 'underline',
-  cursor: 'pointer'
+  cursor: 'pointer',
+  marginRight: 10
 };
 
 var ToolbarNav = {
@@ -64,6 +65,13 @@ var ToolbarComponent = React.createClass({
       tabId: chrome.devtools.inspectedWindow.tabId
     });
   },
+  logModel: function () {
+    chrome.extension.sendMessage({
+      action: 'code',
+      content: 'var event = new Event("cerebral.dev.logModel");window.dispatchEvent(event);',
+      tabId: chrome.devtools.inspectedWindow.tabId
+    });
+  },
   render: function() {
 
     return DOM.div(null,
@@ -88,7 +96,11 @@ var ToolbarComponent = React.createClass({
             DOM.span({
               style: ResetButton,
               onClick: this.resetStore,
-            }, 'reset')
+            }, 'reset'),
+            DOM.span({
+              style: ResetButton,
+              onClick: this.logModel
+            }, 'model')
           ),
           DOM.li({
               style: ToolbarRightItem

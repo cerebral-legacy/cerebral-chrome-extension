@@ -40,8 +40,13 @@ var MutationComponent = React.createClass({
       tabId: chrome.devtools.inspectedWindow.tabId
     });
   },
-  logArg: function(arg) {
-    console.log(arg);
+  logArg: function(argString, event) {
+    event.preventDefault();
+    chrome.extension.sendMessage({
+      action: 'code',
+      content: 'console.log(JSON.parse(\'' + argString + '\'))',
+      tabId: chrome.devtools.inspectedWindow.tabId
+    });
   },
   renderMutationArg: function(mutationArg, index) {
     var argString = JSON.stringify(mutationArg);
@@ -49,9 +54,10 @@ var MutationComponent = React.createClass({
       return DOM.a({
         key: index,
         style: {
-          cursor: 'pointer'
+          cursor: 'pointer',
+          textDecoration: 'underline'
         },
-        onClick: this.logArg.bind(null, mutationArg)
+        onClick: this.logArg.bind(null, argString)
       }, argString.substr(0, 50) + '...');
     } else {
       return argString;
