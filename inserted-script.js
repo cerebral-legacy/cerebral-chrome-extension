@@ -6,6 +6,7 @@
 	}
 
 	window.CEREBRAL_DEBUGGER_INJECTED = true;
+
 	window.addEventListener('cerebral.dev.initialized', function (event) {
 
 		if (window.CEREBRAL_INIT) {
