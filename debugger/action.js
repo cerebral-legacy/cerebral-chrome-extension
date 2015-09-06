@@ -11,9 +11,8 @@ var ActionHeaderStyle = {
   backgroundColor: '#FCFCFC',
   margin: 0,
   color: '#888',
-  fontSize: '1em',
-  borderTop: '1px solid #EEE',
-  borderBottom: '1px solid #EEE'
+  fontSize: 12,
+  border: '1px solid #EEE'
 };
 
 var MutationsStyle = {
@@ -21,16 +20,15 @@ var MutationsStyle = {
   paddingLeft: 0
 };
 
-var OutputStyle = {
-  paddingLeft: 10,
+var InputStyle = {
+  padding: 5,
+  margin: '0 5px'
+};
+
+var InputTitle = {
+  margin: 0,
   fontSize: 12,
-  height: 25,
-  fontFamily: 'inherit',
-  lineHeight: '25px',
-  borderTop: '1px solid #EEE',
-  borderBottom: '1px solid #EEE',
-  backgroundColor: '#FEFEFE',
-  marginTop: 10
+  display: 'inline'
 };
 
 var ActionComponent = React.createClass({
@@ -43,59 +41,45 @@ var ActionComponent = React.createClass({
       getValue: this.props.getValue
     });
   },
-  logOutput: function (outputString, event) {
-    event.preventDefault();
-    chrome.extension.sendMessage({
-      action: 'code',
-      content: 'console.log(JSON.parse(\'' + outputString + '\'))',
-      tabId: chrome.devtools.inspectedWindow.tabId
-    });
-  },
+
   render: function() {
 
-    var outputString = this.props.action.output ? JSON.stringify(this.props.action.output) : '';
-    var output = null;
-
-    if (outputString.length > 50) {
-      output = DOM.a({
-        style: {
-          cursor: 'pointer',
-          textDecoration: 'underline'
-        },
-        onClick: this.logOutput.bind(null, outputString)
-      }, outputString.substr(0, 50) + '...');
-    } else {
-      output = outputString;
-    }
+    var actionStyle = merge({}, ActionStyle, {
+      opacity: this.props.action.hasExecuted || this.props.action.isExecuting ? '1' : '0.5'
+    });
 
     return DOM.li({
-        style: ActionStyle
+        style: actionStyle
       },
       DOM.h3({
           style: ActionHeaderStyle
-        }, (this.props.index + 1) + '. ', this.props.action.name,
+        }, '⌁ ' + this.props.action.name,
         DOM.small({
             style: {
               color: this.props.action.isAsync ? 'orange' : '#555'
             }
           },
           this.props.action.isAsync &&
-          this.props.isExecutingAsync &&
-          this.props.index === this.props.signal.actions.length - 1 ?
-          ' async action running' :
+          this.props.action.isExecuting ?
+          ' running' :
           this.props.action.isAsync ? ' async' :
           null
         )
       ),
+      DOM.div({
+        style: InputStyle
+      }, DOM.h4({style: InputTitle}, '⇢ input: '), this.props.renderValue(this.props.action.input)),
       DOM.ul({
         style: MutationsStyle
       }, this.props.action.mutations.map(this.renderMutation)),
-      output ? DOM.div({
-        style: OutputStyle
-      },
-        DOM.strong(null, this.props.action.path ? this.props.action.path.toUpperCase() + ': ': 'OUTPUT: '),
-        output
-      ) : null
+      this.props.action.outputPath ?
+        this.props.children :
+        this.props.action.output ?
+          DOM.div({
+            style: InputStyle
+          }, DOM.h4({style: InputTitle}, '⇠ output: '), this.props.renderValue(this.props.action.output))
+          :
+          null
     )
   }
 });

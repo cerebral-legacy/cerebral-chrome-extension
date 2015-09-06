@@ -68,7 +68,7 @@ var RangeComponent = React.createClass({
     if (this.props.disabled) {
       return;
     }
-    console.log('IS TRACKING!');
+
     if (this.refs.node && event.target === this.refs.node.getDOMNode()) {
       document.body.style.userSelect = 'none';
       document.body.style.webkitUserSelect = 'none';

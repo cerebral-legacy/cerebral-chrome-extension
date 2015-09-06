@@ -9,12 +9,13 @@ var LogLink = {
 
 var MutationStyle = {
   padding: '5px 10px',
-  fontSize: '0.9em'
+  fontSize: 12
 };
 
 var MutationArgsStyle = {
-  fontSize: '0.75em',
-  color: '#888'
+  fontSize: 11,
+  color: '#888',
+  fontWeight: 'normal'
 };
 
 var mutationColors = {
