@@ -7,9 +7,7 @@
 
 chrome.extension.onConnect.addListener(function (port) {
 
-
   var injectScript = function (tabId, changes, tabObject) {
-    console.log("Status of", tabId, "is", changes.status);
     if (changes.status == "complete") {
       chrome.tabs.executeScript(tabId, {
         file: 'inserted-script.js'

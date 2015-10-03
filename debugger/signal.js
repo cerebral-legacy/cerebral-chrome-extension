@@ -26,14 +26,10 @@ var OutputsStyle = {
   margin: '0 5px',
 };
 
-var OutputStyle = {
-  fontSize: 12
-};
-
 var ParallelStyle = {
   listStyleType: 'none',
   padding: '5px 5px 10px 0',
-  borderLeft: '2px solid #DDD'
+  borderLeft: '2px solid orange'
 };
 
 var ParallelWrapperStyle = {
@@ -51,15 +47,6 @@ var ValueStyle = {
 }
 
 var SignalComponent = React.createClass({
-  renderFPS: function(duration) {
-
-    var color = duration >= 16 ? '#d9534f' : duration >= 10 ? '#f0ad4e' : '#5cb85c';
-    return DOM.strong(null, DOM.small({
-      style: {
-        color: color
-      }
-    }, ' (' + duration + 'ms)'));
-  },
   logValue: function (valueString, event) {
     event.preventDefault();
     chrome.extension.sendMessage({
@@ -69,22 +56,7 @@ var SignalComponent = React.createClass({
     });
   },
   renderValue: function (value) {
-    var valueString = value ? JSON.stringify(value) : '';
-    var output = null;
-
-    if (valueString.length > 50) {
-      output = DOM.a({
-        style: {
-          cursor: 'pointer',
-          textDecoration: 'underline'
-        },
-        onClick: this.logValue.bind(null, valueString)
-      }, valueString.substr(0, 50) + '...');
-    } else {
-      output = valueString;
-    }
-
-    return DOM.span({style: ValueStyle}, output);
+    return React.createElement(TreeView, {data: value}) || null;
   },
   renderOutputs: function (action) {
     if (!action.outputs) {
@@ -94,15 +66,13 @@ var SignalComponent = React.createClass({
       style: OutputsStyle
     }, Object.keys(action.outputs).map(function (output, index) {
       // Opacity on paths not taken, outputPath
-      var outputStyle = merge({}, OutputStyle, {
-        opacity: action.hasExecuted && output === action.outputPath ? '1' : '0.5'
-      });
-      return DOM.li({
+      return React.createElement(OutputPath, {
         key: index,
-        style: outputStyle
-      }, DOM.h4({style: OutputTitle}, '⇣ ' + output + ': '), this.renderValue(action.output), DOM.ul({
-        style: OutputActionsStyle
-      }, action.outputs[output].map(this.renderAction)));
+        action: action,
+        output: output,
+        renderAction: this.renderAction,
+        renderValue: this.renderValue
+      });
 
     }, this));
   },
@@ -126,11 +96,17 @@ var SignalComponent = React.createClass({
 
   },
   render: function() {
-
     return DOM.div(null,
       DOM.h2({
         style: SignalStyle
-      }, DOM.span(null, this.props.signal.name, this.renderFPS(this.props.signal.duration))),
+      },
+        DOM.span(null, this.props.signal.name),
+        this.props.signal.isSync ? DOM.small({
+          style: {
+            color: 'orange'
+          }
+        }, ' sync') : null
+      ),
       DOM.ul({
         style: ActionsStyle
       }, this.props.signal.branches.map(this.renderAction))

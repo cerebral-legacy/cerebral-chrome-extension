@@ -39,6 +39,7 @@ var ToolbarComponent = React.createClass({
   getInitialState: function () {
     return {
       stepValue: this.props.currentSignalIndex + 1 || 0,
+      currentComputed: 0
     };
   },
   componentWillReceiveProps: function (nextProps) {
@@ -72,6 +73,20 @@ var ToolbarComponent = React.createClass({
       tabId: chrome.devtools.inspectedWindow.tabId
     });
   },
+  remember: function (change) {
+    var index = this.state.stepValue + change;
+    chrome.extension.sendMessage({
+      action: 'code',
+      content: 'var event = new CustomEvent("cerebral.dev.remember", {detail: ' + (index - 1) + '});window.dispatchEvent(event);',
+      tabId: chrome.devtools.inspectedWindow.tabId
+    });
+    this.optimisticRangeUpdate(index);
+  },
+  renderComputed() {
+    return this.props.computed.map(function (computed, index) {
+
+    });
+  },
   render: function() {
 
     return DOM.div(null,
@@ -84,9 +99,19 @@ var ToolbarComponent = React.createClass({
           DOM.li({
               style: ToolbarItem
             },
+            DOM.button({
+              disabled: this.props.isExecutingAsync || this.props.steps < 2 || this.state.stepValue === 0,
+              onClick: this.remember.bind(null, -1)
+            }, '❰'),
+            ' ',
             this.state.stepValue,
             ' / ',
-            this.props.totalSignals
+            this.props.totalSignals,
+            ' ',
+            DOM.button({
+              disabled: this.props.isExecutingAsync || this.props.steps < 2 || this.state.stepValue === this.props.steps,
+              onClick: this.remember.bind(null, 1)
+            }, '❱')
           ),
           DOM.li({
               style: ToolbarItem
@@ -102,6 +127,17 @@ var ToolbarComponent = React.createClass({
               onClick: this.logModel
             }, 'model')
           ),
+          /*
+          DOM.li({
+            style: ToolbarItem
+          },
+            DOM.select({},
+              DOM.option({},
+                this.renderComputed()
+              )
+            )
+          ),
+          */
           DOM.li({
               style: ToolbarRightItem
             },
@@ -111,11 +147,12 @@ var ToolbarComponent = React.createClass({
                 margin: '3px'
               },
               onChange: this.toggleKeepState,
-              checked: this.props.willKeepState
-            }), 'keep signals')
+              checked: !this.props.willKeepState
+            }), ' reset on refresh')
           )
         )
-      ),
+      )
+      /*
       React.createElement(SliderComponent, {
         isExecutingAsync: this.props.isExecutingAsync,
         optimisticRangeUpdate: this.optimisticRangeUpdate,
@@ -125,6 +162,7 @@ var ToolbarComponent = React.createClass({
         //recorder: this.state.recorder,
         isRemembering: this.props.isRemembering
       })
+      */
     );
   }
 });

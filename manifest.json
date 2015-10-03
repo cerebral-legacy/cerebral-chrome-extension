@@ -1,6 +1,6 @@
 {
     "name": "Cerebral Debugger",
-    "version": "0.9",
+    "version": "0.13",
     "description": "A debugger for web app state control and insight",
     "devtools_page": "devtools.html",
     "background": {

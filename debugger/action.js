@@ -11,7 +11,7 @@ var ActionHeaderStyle = {
   backgroundColor: '#FCFCFC',
   margin: 0,
   color: '#888',
-  fontSize: 12,
+  fontSize: 14,
   border: '1px solid #EEE'
 };
 
@@ -28,10 +28,16 @@ var InputStyle = {
 var InputTitle = {
   margin: 0,
   fontSize: 12,
-  display: 'inline'
+  display: 'inline-block',
+  verticalAlign: 'top'
 };
 
 var ActionComponent = React.createClass({
+  getInitialState: function () {
+    return {
+      isCollapsed: false
+    }
+  },
   renderMutation: function (mutation, index) {
     return React.createElement(MutationComponent, {
       mutation: mutation,
@@ -42,10 +48,28 @@ var ActionComponent = React.createClass({
     });
   },
 
+  renderDuration: function () {
+
+    var duration = this.props.action.duration;
+
+    if (!duration) {
+      return null;
+    }
+
+    var color = duration >= 16 ? '#d9534f' : duration >= 10 ? '#f0ad4e' : '#5cb85c';
+
+    return DOM.strong(null, DOM.small({
+      style: {
+        color: color
+      }
+    }, ' (' + duration + 'ms)'));
+
+  },
+
   render: function() {
 
     var actionStyle = merge({}, ActionStyle, {
-      opacity: this.props.action.hasExecuted || this.props.action.isExecuting ? '1' : '0.5'
+      opacity: this.props.action.hasExecuted || this.props.action.isExecuting ? '1' : '0.75'
     });
 
     return DOM.li({
@@ -53,7 +77,7 @@ var ActionComponent = React.createClass({
       },
       DOM.h3({
           style: ActionHeaderStyle
-        }, '⌁ ' + this.props.action.name,
+        }, '↪ ' + this.props.action.name, this.renderDuration(),
         DOM.small({
             style: {
               color: this.props.action.isAsync ? 'orange' : '#555'
@@ -68,7 +92,10 @@ var ActionComponent = React.createClass({
       ),
       DOM.div({
         style: InputStyle
-      }, DOM.h4({style: InputTitle}, '⇢ input: '), this.props.renderValue(this.props.action.input)),
+      },
+        DOM.h4({style: InputTitle}, '⇢ input: '),
+        this.props.renderValue(this.props.action.input)
+      ),
       DOM.ul({
         style: MutationsStyle
       }, this.props.action.mutations.map(this.renderMutation)),

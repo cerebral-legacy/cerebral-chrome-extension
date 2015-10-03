@@ -34,6 +34,7 @@ var DebuggerComponent = React.createClass({
           isRemembering: this.props.isRemembering
         }),
         signal ? React.createElement(SignalComponent, {
+          key: currentSignalIndex,
           signal: signal,
           getValue: this.getValue,
           isExecutingAsync: this.props.isExecutingAsync
