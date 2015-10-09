@@ -73,6 +73,14 @@ var ToolbarComponent = React.createClass({
       tabId: chrome.devtools.inspectedWindow.tabId
     });
   },
+  logComputedPath: function (event) {
+    chrome.extension.sendMessage({
+      action: 'code',
+      content: 'var event = new CustomEvent("cerebral.dev.logComputedPath", {detail: ' + JSON.stringify(this.props.computedPaths[event.target.value - 1]) + '});window.dispatchEvent(event);',
+      tabId: chrome.devtools.inspectedWindow.tabId
+    });
+    this.forceUpdate();
+  },
   remember: function (change) {
     var index = this.state.stepValue + change;
     chrome.extension.sendMessage({
@@ -82,10 +90,12 @@ var ToolbarComponent = React.createClass({
     });
     this.optimisticRangeUpdate(index);
   },
-  renderComputed() {
-    return this.props.computed.map(function (computed, index) {
-
-    });
+  renderComputed(path, index) {
+    return DOM.option({
+      value: index
+    },
+      path
+    )
   },
   render: function() {
 
@@ -127,17 +137,16 @@ var ToolbarComponent = React.createClass({
               onClick: this.logModel
             }, 'model')
           ),
-          /*
-          DOM.li({
+          this.props.computedPaths.length ? DOM.li({
             style: ToolbarItem
           },
-            DOM.select({},
-              DOM.option({},
-                this.renderComputed()
-              )
+            DOM.select({
+              onChange: this.logComputedPath,
+              value: this.state.currentComputed
+            },
+              ['Run a computed state...'].concat(this.props.computedPaths).map(this.renderComputed)
             )
-          ),
-          */
+          ) : null,
           DOM.li({
               style: ToolbarRightItem
             },

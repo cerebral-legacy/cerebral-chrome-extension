@@ -126,7 +126,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'handleClick',
 	    value: function handleClick() {
-	      // console.log(this.props.data);
+
 	      if (ObjectInspector.isExpandable(this.props.data)) {
 	        if (this.props.depth > 0) {
 	          this.props.setExpanded(this.props.objectinspectorid, !this.props.getExpanded(this.props.objectinspectorid));

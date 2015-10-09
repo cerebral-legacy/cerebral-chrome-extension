@@ -5,7 +5,15 @@
 // chrome.tabs.*
 // chrome.extension.*
 
+var isInjected = false;
+
 chrome.extension.onConnect.addListener(function (port) {
+
+  if (isInjected) {
+    return;
+  }
+
+  isInjected = true;
 
   var injectScript = function (tabId, changes, tabObject) {
     if (changes.status == "complete") {

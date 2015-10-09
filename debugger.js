@@ -27,6 +27,7 @@ var DebuggerComponent = React.createClass({
           willKeepState: this.props.willKeepState,
           currentSignalIndex: currentSignalIndex,
           totalSignals: signals.length,
+          computedPaths: this.props.computedPaths || [],
           reset: this.reset,
           steps: signals.length,
           isExecutingAsync: this.props.isExecutingAsync,
