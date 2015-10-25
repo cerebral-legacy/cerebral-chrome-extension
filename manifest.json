@@ -1,18 +1,21 @@
 {
     "name": "Cerebral Debugger",
-    "version": "0.14",
+    "version": "0.19",
     "description": "A debugger for web app state control and insight",
     "devtools_page": "devtools.html",
     "content_scripts": [
         {
+            "matches": ["http://*/*"],
+            "js": ["inserted-script.js"],
             "all_frames": false,
-            "run_at": "document_end"
+            "run_at": "document_start"
         }
     ],
     "background": {
         "scripts": [
             "background.js"
-        ]
+        ],
+        "persistent": true
     },
     "permissions": [
         "tabs",

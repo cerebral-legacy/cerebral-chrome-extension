@@ -161,17 +161,6 @@ var ToolbarComponent = React.createClass({
           )
         )
       )
-      /*
-      React.createElement(SliderComponent, {
-        isExecutingAsync: this.props.isExecutingAsync,
-        optimisticRangeUpdate: this.optimisticRangeUpdate,
-        willKeepState: this.props.willKeepState,
-        value: this.state.stepValue,
-        steps: this.props.steps,
-        //recorder: this.state.recorder,
-        isRemembering: this.props.isRemembering
-      })
-      */
     );
   }
 });

@@ -89,8 +89,7 @@ var SignalComponent = React.createClass({
         action: action,
         renderValue: this.renderValue,
         key: index,
-        index: index,
-        getValue: this.props.getValue
+        index: index
       }, this.renderOutputs(action));
     }
 

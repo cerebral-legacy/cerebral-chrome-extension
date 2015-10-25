@@ -1,36 +1,40 @@
 // This is included and executed in the inspected page
 (function (window) {
+	var CEREBRAL_INIT = false;
+	var initialized = function (event) {
 
-	if (window.CEREBRAL_INIT || window.CEREBRAL_DEBUGGER_INJECTED) {
-		var event = new Event('cerebral.dev.requestUpdate');
-		window.dispatchEvent(event);
-		return;
-	}
-
-	window.CEREBRAL_DEBUGGER_INJECTED = true;
-
-
-	window.addEventListener('cerebral.dev.initialized', function (event) {
-
-		if (window.CEREBRAL_INIT) {
+		if (CEREBRAL_INIT) {
 			chrome.extension.sendMessage(event.detail, function(message){});
 			return;
 		}
 
-		window.CEREBRAL_INIT = true;
+		CEREBRAL_INIT = true;
+
 		chrome.extension.sendMessage(event.detail, function(message){});
 
-		window.addEventListener('cerebral.dev.update', function (event) {
+		var update = function (event) {
 			if (!event.detail) {
 				throw new Error('You have to pass a serializeable object to a signal. Did you pass a mouse event maybe?');
 				return;
 			}
-			chrome.extension.sendMessage(event.detail, function(message){});
-		});
+			try {
+				chrome.extension.sendMessage(event.detail, function(message){});
+			} catch (e) {
+				console.log('FAILED', e);
+				window.removeEventListener('cerebral.dev.update', update);
+				window.removeEventListener('cerebral.dev.initialized', initialized);
+			}
+		};
+		window.addEventListener('cerebral.dev.update', update);
 
+	};
+	window.addEventListener('cerebral.dev.cerebralPong', initialized);
+	window.addEventListener('cerebral.dev.cerebralPing', function () {
+		var event = new Event('cerebral.dev.debuggerPing');
+		window.dispatchEvent(event);
 	});
 
-	var event = new Event('cerebral.dev.initialize');
+	var event = new Event('cerebral.dev.debuggerPing');
 	window.dispatchEvent(event);
 
 }(window));
