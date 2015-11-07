@@ -68,7 +68,6 @@ var ActionComponent = React.createClass({
 
   render: function() {
 
-    console.log(this.props.action);
     var actionStyle = merge({}, ActionStyle, {
       opacity: this.props.action.hasExecuted || this.props.action.isExecuting ? '1' : '0.75'
     });

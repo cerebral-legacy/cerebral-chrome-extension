@@ -90,6 +90,13 @@ var ToolbarComponent = React.createClass({
     });
     this.optimisticRangeUpdate(index);
   },
+  toggleDisabled: function () {
+    chrome.extension.sendMessage({
+      action: 'code',
+      content: 'var event = new Event("cerebral.dev.toggleDisableDebugger");window.dispatchEvent(event);',
+      tabId: chrome.devtools.inspectedWindow.tabId
+    });
+  },
   renderComputed(path, index) {
     return DOM.option({
       value: index
@@ -147,6 +154,13 @@ var ToolbarComponent = React.createClass({
               ['Run a computed state...'].concat(this.props.computedPaths).map(this.renderComputed)
             )
           ) : null,
+          DOM.li({
+            style: ToolbarRightItem
+          },
+            DOM.button({
+              onClick: this.toggleDisabled
+            }, this.props.isDisabled ? 'activate' : 'disable')
+          ),
           DOM.li({
               style: ToolbarRightItem
             },

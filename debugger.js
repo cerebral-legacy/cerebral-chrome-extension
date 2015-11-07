@@ -20,7 +20,8 @@ var DebuggerComponent = React.createClass({
       computedPaths: [],
       willStoreState: false,
       willKeepState: false,
-      isExecutingAsync: false
+      isExecutingAsync: false,
+      disableDebugger: false
     };
   },
   componentDidMount: function () {
@@ -56,7 +57,7 @@ var DebuggerComponent = React.createClass({
         computedPaths: this.state.computedPaths || [],
         steps: signals.length,
         isExecutingAsync: this.state.isExecutingAsync,
-        //recorder: this.state.recorder,
+        isDisabled: this.state.disableDebugger,
         isRemembering: this.state.isRemembering
       }),
       signal ? React.createElement(SignalComponent, {
