@@ -48,10 +48,11 @@ var ToolbarComponent = React.createClass({
     });
   },
   toggleKeepState: function () {
-    chrome.extension.sendMessage({
-      action: 'code',
-      content: 'var event = new Event("cerebral.dev.toggleKeepState");window.dispatchEvent(event);',
-      tabId: chrome.devtools.inspectedWindow.tabId
+    var src = 'var event = new Event("cerebral.dev.toggleKeepState");window.dispatchEvent(event);';
+    chrome.devtools.inspectedWindow.eval(src, function(res, err) {
+      if (err) {
+        console.log(err);
+      }
     });
   },
   optimisticRangeUpdate: function (index) {
@@ -60,35 +61,39 @@ var ToolbarComponent = React.createClass({
     });
   },
   resetStore: function () {
-    chrome.extension.sendMessage({
-      action: 'code',
-      content: 'var event = new Event("cerebral.dev.resetStore");window.dispatchEvent(event);',
-      tabId: chrome.devtools.inspectedWindow.tabId
+    var src = 'var event = new Event("cerebral.dev.resetStore");window.dispatchEvent(event);';
+    chrome.devtools.inspectedWindow.eval(src, function(res, err) {
+      if (err) {
+        console.log(err);
+      }
     });
   },
   logModel: function () {
-    chrome.extension.sendMessage({
-      action: 'code',
-      content: 'var event = new Event("cerebral.dev.logModel");window.dispatchEvent(event);',
-      tabId: chrome.devtools.inspectedWindow.tabId
+    var src = 'var event = new Event("cerebral.dev.logModel");window.dispatchEvent(event);';
+    chrome.devtools.inspectedWindow.eval(src, function(res, err) {
+      if (err) {
+        console.log(err);
+      }
     });
   },
   logComputedPath: function (event) {
-    chrome.extension.sendMessage({
-      action: 'code',
-      content: 'var event = new CustomEvent("cerebral.dev.logComputedPath", {detail: ' + JSON.stringify(this.props.computedPaths[event.target.value - 1]) + '});window.dispatchEvent(event);',
-      tabId: chrome.devtools.inspectedWindow.tabId
-    });
-    this.forceUpdate();
+    var src = 'var event = new CustomEvent("cerebral.dev.logComputedPath", {detail: ' + JSON.stringify(this.props.computedPaths[event.target.value - 1]) + '});window.dispatchEvent(event);';
+    chrome.devtools.inspectedWindow.eval(src, function(res, err) {
+      if (err) {
+        console.log(err);
+      }
+      this.forceUpdate();
+    }.bind(this));
   },
   remember: function (change) {
     var index = this.state.stepValue + change;
-    chrome.extension.sendMessage({
-      action: 'code',
-      content: 'var event = new CustomEvent("cerebral.dev.remember", {detail: ' + (index - 1) + '});window.dispatchEvent(event);',
-      tabId: chrome.devtools.inspectedWindow.tabId
-    });
-    this.optimisticRangeUpdate(index);
+    var src = 'var event = new CustomEvent("cerebral.dev.remember", {detail: ' + (index - 1) + '});window.dispatchEvent(event);';
+    chrome.devtools.inspectedWindow.eval(src, function(res, err) {
+      if (err) {
+        console.log(err);
+      }
+      this.optimisticRangeUpdate(index);
+    }.bind(this));
   },
   rememberNow: function () {
     var index = this.props.totalSignals;
@@ -100,11 +105,13 @@ var ToolbarComponent = React.createClass({
     this.optimisticRangeUpdate(index);
   },
   toggleDisabled: function () {
-    chrome.extension.sendMessage({
-      action: 'code',
-      content: 'var event = new Event("cerebral.dev.toggleDisableDebugger");window.dispatchEvent(event);',
-      tabId: chrome.devtools.inspectedWindow.tabId
-    });
+    var src =  'var event = new Event("cerebral.dev.toggleDisableDebugger");window.dispatchEvent(event);';
+    chrome.devtools.inspectedWindow.eval(src, function(res, err) {
+      if (err) {
+        console.log(err);
+      }
+      this.optimisticRangeUpdate(index);
+    }.bind(this));
   },
   renderComputed(path, index) {
     return DOM.option({

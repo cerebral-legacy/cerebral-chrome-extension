@@ -49,10 +49,11 @@ var ValueStyle = {
 var SignalComponent = React.createClass({
   logValue: function (valueString, event) {
     event.preventDefault();
-    chrome.extension.sendMessage({
-      action: 'code',
-      content: 'console.log(JSON.parse(\'' + valueString + '\'))',
-      tabId: chrome.devtools.inspectedWindow.tabId
+    var src = 'console.log(JSON.parse(\'' + valueString + '\'))';
+    chrome.devtools.inspectedWindow.eval(src, function(res, err) {
+      if (err) {
+        console.log(err);
+      }
     });
   },
   renderValue: function (value) {

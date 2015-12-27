@@ -35,18 +35,20 @@ var MutationComponent = React.createClass({
         path: path
       }
     };
-    chrome.extension.sendMessage({
-      action: 'code',
-      content: 'var event = new CustomEvent("cerebral.dev.logPath", ' + JSON.stringify(detail) + ');window.dispatchEvent(event);',
-      tabId: chrome.devtools.inspectedWindow.tabId
+    var src = 'var event = new CustomEvent("cerebral.dev.logPath", ' + JSON.stringify(detail) + ');window.dispatchEvent(event);';
+    chrome.devtools.inspectedWindow.eval(src, function(res, err) {
+      if (err) {
+        console.log(err);
+      }
     });
   },
   logArg: function(argString, event) {
     event.preventDefault();
-    chrome.extension.sendMessage({
-      action: 'code',
-      content: 'console.log(JSON.parse(\'' + argString + '\'))',
-      tabId: chrome.devtools.inspectedWindow.tabId
+    var src = 'console.log(JSON.parse(\'' + argString + '\'))';
+    chrome.devtools.inspectedWindow.eval(src, function(res, err) {
+      if (err) {
+        console.log(err);
+      }
     });
   },
   renderMutationArg: function(mutationArg, index) {

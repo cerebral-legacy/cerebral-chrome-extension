@@ -34,12 +34,12 @@ var DebuggerComponent = React.createClass({
       this.setState(JSON.parse(message));
     }.bind(this));
 
-    chrome.extension.sendMessage({
-      action: 'code',
-      content: 'var event = new Event("cerebral.dev.requestUpdate");window.dispatchEvent(event);',
-      tabId: chrome.devtools.inspectedWindow.tabId
+    var src = 'var event = new Event("cerebral.dev.requestUpdate");window.dispatchEvent(event);';
+    chrome.devtools.inspectedWindow.eval(src, function(res, err) {
+      if (err) {
+        console.log(err);
+      }
     });
-
   },
   render: function () {
     var currentSignalIndex = this.state.currentSignalIndex;
