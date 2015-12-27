@@ -90,6 +90,15 @@ var ToolbarComponent = React.createClass({
     });
     this.optimisticRangeUpdate(index);
   },
+  rememberNow: function () {
+    var index = this.props.totalSignals;
+    chrome.extension.sendMessage({
+      action: 'code',
+      content: 'var event = new CustomEvent("cerebral.dev.remember", {detail: ' + (index - 1) + '});window.dispatchEvent(event);',
+      tabId: chrome.devtools.inspectedWindow.tabId
+    });
+    this.optimisticRangeUpdate(index);
+  },
   toggleDisabled: function () {
     chrome.extension.sendMessage({
       action: 'code',
@@ -128,7 +137,11 @@ var ToolbarComponent = React.createClass({
             DOM.button({
               disabled: this.props.isExecutingAsync || this.props.steps < 2 || this.state.stepValue === this.props.steps,
               onClick: this.remember.bind(null, 1)
-            }, '❱')
+            }, '❱'),
+            DOM.button({
+              disabled: this.props.isExecutingAsync || this.props.steps < 2 || this.state.stepValue === this.props.steps,
+              onClick: this.rememberNow
+            }, '❱❱')
           ),
           DOM.li({
               style: ToolbarItem
