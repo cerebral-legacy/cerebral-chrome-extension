@@ -88,6 +88,7 @@ var SignalComponent = React.createClass({
     } else {
       return React.createElement(ActionComponent, {
         action: action,
+        signalName: this.props.signal.name,
         renderValue: this.renderValue,
         key: index,
         index: index
