@@ -1,6 +1,26 @@
 // This is included and executed in the inspected page
 (function (window) {
 	var CEREBRAL_INIT = false;
+
+  function initializeHook(window) {
+    Object.defineProperty(window, '__CEREBRAL_DEVTOOLS_GLOBAL_HOOK__', {
+      value: {
+        signals: {}
+      }
+    });
+  }
+
+  var js = (
+    ';(' + initializeHook.toString() + '(window))'
+  );
+
+  // This script runs before the <head> element is created, so we add the script
+  // to <html> instead.
+  var script = document.createElement('script');
+  script.textContent = js;
+  document.documentElement.appendChild(script);
+  script.parentNode.removeChild(script);
+
 	var initialized = function (event) {
 
 		if (CEREBRAL_INIT) {
@@ -36,5 +56,4 @@
 
 	var event = new Event('cerebral.dev.debuggerPing');
 	window.dispatchEvent(event);
-
 }(window));

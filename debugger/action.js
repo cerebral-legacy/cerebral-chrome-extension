@@ -66,6 +66,35 @@ var ActionComponent = React.createClass({
 
   },
 
+  inspect: function(e) {
+    e.preventDefault();
+
+    function inspectSignal(window, signalName, path) {
+      if (window.__CEREBRAL_DEVTOOLS_GLOBAL_HOOK__) {
+        var signal = window.__CEREBRAL_DEVTOOLS_GLOBAL_HOOK__.signals[signalName];
+        if (signal) {
+          var action = signal;
+          // Output values are actually the second value in the array
+          var paths = path.replace(/0,outputs/g, '1').split(",");
+          for (var i = 0; i < paths.length; i++) {
+            action = action[paths[i]];
+          }
+          inspect(action);
+        }
+      }
+    }
+
+    var src = (
+      '(' + inspectSignal.toString() + ')(window, "' + this.props.signalName + '", "' + this.props.action.path + '")'
+    );
+
+    chrome.devtools.inspectedWindow.eval(src, function(res, err) {
+      if (err) {
+        console.log(err);
+      }
+    });
+  },
+
   render: function() {
 
     var actionStyle = merge({}, ActionStyle, {
@@ -75,9 +104,14 @@ var ActionComponent = React.createClass({
     return DOM.li({
         style: actionStyle
       },
-      DOM.h3({
+      DOM.a({
+        onClick: this.inspect.bind(this),
+        style: {
+          cursor: "pointer"
+        }
+      }, DOM.h3({
           style: ActionHeaderStyle
-        }, '↪ ' + this.props.action.name, this.renderDuration(),
+      }, '↪ ' + this.props.action.name, this.props.devToolsIndex, this.renderDuration(),
         DOM.small({
             style: {
               color: this.props.action.isAsync ? 'orange' : '#555'
@@ -89,13 +123,11 @@ var ActionComponent = React.createClass({
           this.props.action.isAsync ? ' async' :
           null
         )
-      ),
+      )),
       DOM.div({
         style: InputStyle
       },
-        DOM.h4({style: InputTitle}, '⇢ input: '),
-        this.props.renderValue(this.props.action.input)
-      ),
+      DOM.h4({style: InputTitle}, '⇢ input: '), this.props.renderValue(this.props.action.input)),
       DOM.ul({
         style: MutationsStyle
       }, this.props.action.mutations.map(this.renderMutation)),
