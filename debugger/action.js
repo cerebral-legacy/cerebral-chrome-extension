@@ -71,14 +71,25 @@ var ActionComponent = React.createClass({
 
     function inspectSignal(window, signalName, path) {
       if (window.__CEREBRAL_DEVTOOLS_GLOBAL_HOOK__) {
-        var signal = window.__CEREBRAL_DEVTOOLS_GLOBAL_HOOK__.signals[signalName];
+        var signal = signalName.split('.').reduce(function (signals, key) {
+          return signals[key];
+        }, window.__CEREBRAL_DEVTOOLS_GLOBAL_HOOK__.signals);
         if (signal) {
-          var action = signal;
-          // Output values are actually the second value in the array
-          var paths = path.replace(/0,outputs/g, '1').split(",");
-          for (var i = 0; i < paths.length; i++) {
-            action = action[paths[i]];
-          }
+          path = path.split(',');
+          path = path.map(function (pathName, index) {
+            if (path[index + 1] === 'outputs') {
+              return Number(pathName) + 1;
+            }
+            return pathName;
+          }).filter(function (pathName, index) {
+            if (pathName === 'outputs') {
+              return false;
+            }
+            return true;
+          });
+          var action = path.reduce(function (branches, index) {
+            return branches[index];
+          }, signal.chain);
           inspect(action);
         }
       }

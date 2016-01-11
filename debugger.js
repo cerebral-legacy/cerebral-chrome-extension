@@ -45,7 +45,6 @@ var DebuggerComponent = React.createClass({
     var currentSignalIndex = this.state.currentSignalIndex;
     var signals = this.state.signals || [];
     var signal = signals[currentSignalIndex];
-
     return DOM.div({
         style: debuggerStyle
       },
