@@ -106,7 +106,7 @@ var SignalComponent = React.createClass({
           style: {
             color: 'orange'
           }
-        }, this.props.signal.branches[0].name === 'setUrl' ? ' routed' : ' sync') : null
+        }, this.props.signal.isRouted ? ' routed' : ' sync') : null
       ),
       DOM.ul({
         style: ActionsStyle
