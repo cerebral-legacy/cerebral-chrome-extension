@@ -2,8 +2,12 @@ var DOM = React.DOM;
 
 var ToolbarStyle = {
   backgroundColor: '#EEE',
-  padding: '5px',
-  borderBottom: '1px solid #999'
+  padding: '5px 0',
+  borderTop: '1px solid #999',
+  position: 'fixed',
+  top: 0,
+  width: '100%',
+  zIndex: 999999
 };
 
 var ResetButton = {
@@ -55,11 +59,6 @@ var ToolbarComponent = React.createClass({
       }
     });
   },
-  optimisticRangeUpdate: function (index) {
-    this.setState({
-      stepValue: index
-    });
-  },
   resetStore: function () {
     var src = 'var event = new Event("cerebral.dev.resetStore");window.dispatchEvent(event);';
     chrome.devtools.inspectedWindow.eval(src, function(res, err) {
@@ -67,6 +66,14 @@ var ToolbarComponent = React.createClass({
         console.log(err);
       }
     });
+  },
+  rewrite: function () {
+    var src = 'var event = new CustomEvent("cerebral.dev.rewrite", {detail: ' + this.props.currentSignalIndex[0] + '});window.dispatchEvent(event);';
+    chrome.devtools.inspectedWindow.eval(src, function(res, err) {
+      if (err) {
+        console.log(err);
+      }
+    }.bind(this));
   },
   logModel: function () {
     var src = 'var event = new Event("cerebral.dev.logModel");window.dispatchEvent(event);';
@@ -85,24 +92,21 @@ var ToolbarComponent = React.createClass({
       this.forceUpdate();
     }.bind(this));
   },
-  remember: function (change) {
-    var index = this.state.stepValue + change;
-    var src = 'var event = new CustomEvent("cerebral.dev.remember", {detail: ' + (index - 1) + '});window.dispatchEvent(event);';
+  remember: function () {
+    var src = 'var event = new CustomEvent("cerebral.dev.remember", {detail: ' + this.props.currentSignalIndex[0] + '});window.dispatchEvent(event);';
     chrome.devtools.inspectedWindow.eval(src, function(res, err) {
       if (err) {
         console.log(err);
       }
-      this.optimisticRangeUpdate(index);
     }.bind(this));
   },
-  rememberNow: function () {
-    var index = this.props.totalSignals;
-    chrome.extension.sendMessage({
-      action: 'code',
-      content: 'var event = new CustomEvent("cerebral.dev.remember", {detail: ' + (index - 1) + '});window.dispatchEvent(event);',
-      tabId: chrome.devtools.inspectedWindow.tabId
-    });
-    this.optimisticRangeUpdate(index);
+  rememberLast: function () {
+    var src = 'var event = new CustomEvent("cerebral.dev.rememberNow");window.dispatchEvent(event);';
+    chrome.devtools.inspectedWindow.eval(src, function(res, err) {
+      if (err) {
+        console.log(err);
+      }
+    }.bind(this));
   },
   toggleDisabled: function () {
     var src =  'var event = new Event("cerebral.dev.toggleDisableDebugger");window.dispatchEvent(event);';
@@ -133,36 +137,41 @@ var ToolbarComponent = React.createClass({
               style: ToolbarItem
             },
             DOM.button({
-              disabled: this.props.isExecutingAsync || this.props.steps < 2 || this.state.stepValue === 0,
-              onClick: this.remember.bind(null, -1)
-            }, '❰'),
-            ' ',
-            this.state.stepValue,
-            ' / ',
-            this.props.totalSignals,
-            ' ',
-            DOM.button({
-              disabled: this.props.isExecutingAsync || this.props.steps < 2 || this.state.stepValue === this.props.steps,
-              onClick: this.remember.bind(null, 1)
-            }, '❱'),
-            DOM.button({
-              disabled: this.props.isExecutingAsync || this.props.steps < 2 || this.state.stepValue === this.props.steps,
-              onClick: this.rememberNow
-            }, '❱❱')
+              disabled: this.props.isExecutingAsync,
+              onClick: this.remember
+            }, 'Go To')
           ),
           DOM.li({
               style: ToolbarItem
-            }, !this.props.isRemembering &&
-            (this.props.hasExecutingAsyncSignals /*|| this.props.recorder.isPlaying || this.props.recorder.isRecording*/) ?
-            null :
-            DOM.span({
-              style: ResetButton,
-              onClick: this.resetStore,
-            }, 'reset'),
-            DOM.span({
-              style: ResetButton,
+            },
+            DOM.button({
+              disabled: this.props.isExecutingAsync,
+              onClick: this.rememberLast
+            }, 'Go To Last')
+          ),
+          DOM.li({
+              style: ToolbarItem
+            },
+            DOM.button({
+              disabled: this.props.isExecutingAsync,
+              onClick: this.rewrite
+            }, 'Rewrite')
+          ),
+          DOM.li({
+              style: ToolbarItem
+            },
+            DOM.button({
+              disabled: this.props.isExecutingAsync,
+              onClick: this.resetStore
+            }, 'Reset')
+          ),
+          DOM.li({
+              style: ToolbarItem
+            },
+            DOM.button({
+              disabled: this.props.isExecutingAsync,
               onClick: this.logModel
-            }, 'model')
+            }, 'Model')
           ),
           this.props.computedPaths.length ? DOM.li({
             style: ToolbarItem

@@ -100,13 +100,7 @@ var SignalComponent = React.createClass({
     return DOM.div(null,
       DOM.h2({
         style: SignalStyle
-      },
-        DOM.span(null, this.props.signal.name),
-        this.props.signal.isSync ? DOM.small({
-          style: {
-            color: 'orange'
-          }
-        }, this.props.signal.isRouted ? ' routed' : ' sync') : null
+      }
       ),
       DOM.ul({
         style: ActionsStyle
