@@ -4,6 +4,7 @@ var ToolbarStyle = {
   backgroundColor: '#EEE',
   padding: '5px 0',
   borderTop: '1px solid #999',
+  borderBottom: '1px solid #999',
   position: 'fixed',
   top: 0,
   width: '100%',
@@ -68,7 +69,7 @@ var ToolbarComponent = React.createClass({
     });
   },
   rewrite: function () {
-    var src = 'var event = new CustomEvent("cerebral.dev.rewrite", {detail: ' + this.props.currentSignalIndex[0] + '});window.dispatchEvent(event);';
+    var src = 'var event = new CustomEvent("cerebral.dev.rewrite", {detail: ' + (this.props.totalSignals - this.props.currentSignalIndex[0] - 1) + '});window.dispatchEvent(event);';
     chrome.devtools.inspectedWindow.eval(src, function(res, err) {
       if (err) {
         console.log(err);
@@ -90,14 +91,6 @@ var ToolbarComponent = React.createClass({
         console.log(err);
       }
       this.forceUpdate();
-    }.bind(this));
-  },
-  remember: function () {
-    var src = 'var event = new CustomEvent("cerebral.dev.remember", {detail: ' + this.props.currentSignalIndex[0] + '});window.dispatchEvent(event);';
-    chrome.devtools.inspectedWindow.eval(src, function(res, err) {
-      if (err) {
-        console.log(err);
-      }
     }.bind(this));
   },
   rememberLast: function () {
@@ -138,7 +131,7 @@ var ToolbarComponent = React.createClass({
             },
             DOM.button({
               disabled: this.props.isExecutingAsync,
-              onClick: this.remember
+              onClick: this.props.remember
             }, 'Go To')
           ),
           DOM.li({

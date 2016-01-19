@@ -1,123 +1,93 @@
 var DOM = React.DOM;
 
+function hashCode(str) { // java String#hashCode
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+       hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return hash;
+}
+
+function intToRGB(i){
+    var c = (i & 0x00FFFFFF)
+        .toString(16)
+        .toUpperCase();
+
+    return "00000".substring(0, 6 - c.length) + c;
+}
+
+function ColorLuminance(hex, lum) {
+
+	// validate hex string
+	hex = String(hex).replace(/[^0-9a-f]/gi, '');
+	if (hex.length < 6) {
+		hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+	}
+	lum = lum || 0;
+
+	// convert to decimal and change luminosity
+	var rgb = "#", c, i;
+	for (i = 0; i < 3; i++) {
+		c = parseInt(hex.substr(i*2,2), 16);
+		c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
+		rgb += ("00"+c).substr(c.length);
+	}
+
+	return rgb;
+}
+
 var SignalsStyle = {
-  background: 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAMElEQVQIW2N89+7dfwYk8P79ewZGZEGQgKCgIEIQJgDSBFaJLAAWvHv37n+QFmQAAEgLHsBFNKP+AAAAAElFTkSuQmCC) repeat',
-  padding: '0 5px 0 5px',
-  borderTop: '1px solid #999',
-  position: 'fixed',
-  top: 30,
-  width: '100%',
-  zIndex: 999999,
-  overflowX: 'hidden',
+  height: '100%',
   borderBottom: '1px solid #999',
-  WebkitUserSelect: 'none'
+  WebkitUserSelect: 'none',
+  width: 'auto',
+  paddingTop: 31,
+  overflow: 'hidden',
+  paddingRight: 3,
+  boxSizing: 'border-box'
 };
 
 var SignalsNav = {
   position: 'relative',
-  display: 'flex',
-  alignItems: 'stretch',
-  flexWrap: 'nowrap',
   listStyleType: 'none',
-  minHeight: 37.5,
-  padding: 0,
   margin: 0,
-  left: 0,
-  transition: 'left 0.25s ease-out'
+  transition: 'left 0.25s ease-out',
+  height: '100%',
+  overflowY: 'scroll',
+  boxSizing: 'border-box',
+  padding: '5px 0'
 };
 
 var SignalsColumn= {
-  alignSelf: 'stretch',
   cursor: 'pointer',
-  flex: 'auto'
+  whiteSpace: 'nowrap',
+  padding: '3px',
+  borderBottom: '1px solid transparent',
+  borderTop: '1px solid transparent',
+  boxSizing: 'border-box',
+  margin: '2px 0'
 }
 
 var SignalsItem = {
-  margin: '5px',
   border: '1px solid #333',
-  padding: '5px',
+  margin: '1px 0',
+  padding: '2px',
   color: '#FFF',
-  borderRadius: '4px',
+  borderRadius: '3px',
+  fontSize: '10px',
   backgroundColor: 'green',
   opacity: '0.6',
-  whiteSpace: 'nowrap'
+  boxSizing: 'border-box',
+  fontWeight: 'bold'
 };
 
 var SignalsComponent = React.createClass({
-  isDragging: false,
-  isDetectingDrag: false,
-  dragStart: 0,
-  mouseStart: 0,
-  componentDidMount: function() {
-    this.positionSignals();
-    this.getDOMNode().addEventListener('mousewheel', this.scroll);
-    window.addEventListener('mousemove', this.drag);
-    window.addEventListener('mouseup', this.stopDrag);
-  },
-  componentWillUnmount() {
-    window.removeEventListener('mousemove', this.drag);
-    window.removeEventListener('mouseup', this.stopDrag);
-  },
-  componentDidUpdate: function() {
-    this.positionSignals();
-  },
-  detectDrag(event) {
-    this.dragStart = this.refs.signals.getDOMNode().offsetLeft - 15;
-    this.mouseStart = event.clientX;
-    this.isDetectingDrag = true;
-  },
-  drag(event) {
-    if (this.isDetectingDrag && Math.abs(this.dragStart - event.clientX) > 10) {
-      this.isDetectingDrag = false;
-      this.isDragging = true;
-    }
-
-    if (this.isDragging) {
-      var moveTo = event.clientX - this.mouseStart + this.dragStart + 10;
-      this.refs.signals.getDOMNode().style.transition = 'none';
-      this.refs.signals.getDOMNode().style.left = moveTo + 'px';
-    }
-  },
-  stopDrag() {
-    this.refs.signals.getDOMNode().style.transition = 'left 0.25s ease-out';
-    setTimeout(function () {
-      this.isDragging = false;
-      this.isDetectingDrag = false;
-    }.bind(this), 0);
-
-  },
-  scroll: function (event) {
-    event.preventDefault();
-    this.move(event.deltaX);
-  },
-  move: function (deltaX) {
-    this.refs.signals.getDOMNode().style.transition = 'none';
-    this.refs.signals.getDOMNode().style.left = (parseInt(this.refs.signals.getDOMNode().style.left) - deltaX) + 'px';
-  },
-  positionSignals: function() {
-    if (!this.props.signals.length) {
-      return;
-    }
-
-    var els = this.refs.signals.getDOMNode().childNodes;
-    var totalWidth = window.innerWidth;
-
-    var currentLi = els[this.props.currentSignalIndex[0]];
-    var currentLiOffset = currentLi.offsetLeft + (currentLi.offsetWidth / 2);
-    var center = totalWidth / 2;
-    var distanceToCenter = center - currentLiOffset;
-
-    this.refs.signals.getDOMNode().style.left = distanceToCenter + 'px';
-  },
   onSignalClick: function (columnIndex, signalIndex, event) {
     event.stopPropagation();
-    if (this.isDragging) {
-      return;
-    }
-    this.refs.signals.getDOMNode().style.transition = 'left 0.25s ease-out';
-    setTimeout(function () {
-      this.props.onSignalClick(columnIndex, signalIndex)
-    }.bind(this), 50);
+    this.props.onSignalClick(columnIndex, signalIndex);
+  },
+  componentDidUpdate(prevProps) {
+
   },
   render: function() {
     var currentSignalIndex = this.props.currentSignalIndex;
@@ -125,64 +95,83 @@ var SignalsComponent = React.createClass({
     var currentSignalIndex = currentSignalIndex[1];
     var onSignalClick = this.onSignalClick;
 
-    return DOM.div(null,
-      DOM.div({
-          style: SignalsStyle,
-          onMouseDown: this.detectDrag
+    return DOM.div({
+        style: SignalsStyle,
+        onMouseDown: this.detectDrag
+      },
+      DOM.ul({
+          style: SignalsNav,
+          ref: 'signals'
         },
-        DOM.ul({
-            style: SignalsNav,
-            ref: 'signals'
-          },
-          this.props.signals.map(function (signals, columnIndex) {
-            var column = Object.keys(SignalsColumn).reduce(function (style, key) {
-              style[key] = SignalsColumn[key];
-              return style;
-            }, {});
+        this.props.signals.map(function (signals, columnIndex) {
+          var column = Object.keys(SignalsColumn).reduce(function (style, key) {
+            style[key] = SignalsColumn[key];
+            return style;
+          }, {});
 
-            if (columnIndex === currentColumnIndex) {
-              column.backgroundColor = '#ddd';
-              column.borderLeft = '1px solid #999';
-              column.borderRight = '1px solid #999';
-            }
+          if (columnIndex === currentColumnIndex) {
+            column.backgroundColor = '#F6F6F6';
+            column.borderTop = '1px solid #DEDEDE';
+            column.borderBottom = '1px solid #DEDEDE';
+          }
 
-            return DOM.li({
-                style: column,
-                onClick: onSignalClick.bind(null, columnIndex, 0),
-                onMouseEnter: function (event) {
-                  event.currentTarget.style.backgroundColor = '#E6E6E6';
-                },
-                onMouseLeave: function (event) {
-                  event.currentTarget.style.backgroundColor = columnIndex === currentColumnIndex ? '#DDD' : 'transparent';
-                }
+          return DOM.li({
+              style: column,
+              onClick: onSignalClick.bind(null, columnIndex, 0),
+              onDoubleClick: this.props.onDoubleClick,
+              onMouseEnter: function (event) {
+                event.currentTarget.style.backgroundColor = '#F0F0F0';
               },
+              onMouseLeave: function (event) {
+                event.currentTarget.style.backgroundColor = columnIndex === currentColumnIndex ? '#F0F0F0' : 'transparent';
+              }
+            },
 
-              signals.map(function (signal, signalIndex) {
-                var style = Object.keys(SignalsItem).reduce(function (style, key) {
-                  style[key] = SignalsItem[key];
-                  return style;
-                }, {});
+            signals.map(function (signal, signalIndex) {
+              var style = Object.keys(SignalsItem).reduce(function (style, key) {
+                style[key] = SignalsItem[key];
+                return style;
+              }, {});
 
-                if (columnIndex === currentColumnIndex && signalIndex === currentSignalIndex) {
-                  style.opacity = '1';
-                }
+              if (columnIndex === currentColumnIndex && signalIndex === currentSignalIndex) {
+                style.opacity = '1';
+              }
 
-                if (signal.isExecuting) {
-                  style.backgroundColor = 'orange';
-                }
+              var hex = '#' + intToRGB(hashCode(signal.name));
+              style.backgroundColor = hex;
 
-                console.log(signal);
-                return DOM.div({
-                  style: style,
-                  onClick: onSignalClick.bind(null, columnIndex, signalIndex)
-                },
-                  signal.name,
-                  signal.isRouted ? DOM.small({style: {fontWeight: 'bold'}}, ' routed') : signal.isSync ? DOM.small({style: {fontWeight: 'bold'}}, ' sync') : null
-                )
-              })
-            );
-          }, this)
-        )
+              style.color = ColorLuminance(hex, -0.6);
+              var name = signal.name.split('.');
+
+              var signalContainer = DOM.div({
+                key: 'signal_' + signalIndex,
+                style: style,
+                className: signal.isExecuting ? 'pulse1' : null,
+                onClick: onSignalClick.bind(null, columnIndex, signalIndex)
+              }, name[name.length - 1]);
+
+              var time = 0;
+              if (signalIndex === signals.length - 1) {
+                time = columnIndex === 0 ? 0 : ((this.props.signals[columnIndex - 1][this.props.signals[columnIndex - 1].length - 1].start - signal.start) / 1000).toFixed(1)
+                return [
+                  signalContainer,
+                  DOM.span({
+                    key: 'time_' + signalIndex,
+                    style: {
+                      fontSize: '10px',
+                      paddingTop: '3px'
+                    }
+                  }, time + 's - ' + (signal.isSync ? signal.isRouted ? ' routed' : ' sync' : ' frame'))
+                ];
+              }
+
+              return signalContainer
+
+
+
+            }, this)
+          );
+        }, this)
       )
     );
   }

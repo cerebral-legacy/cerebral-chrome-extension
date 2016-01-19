@@ -97,14 +97,44 @@ var SignalComponent = React.createClass({
 
   },
   render: function() {
-    return DOM.div(null,
-      DOM.h2({
-        style: SignalStyle
+    return DOM.div({
+      style: {
+        flex: '1',
+        paddingTop: 31,
+        height: '100%',
+        boxSizing: 'border-box'
       }
-      ),
-      DOM.ul({
-        style: ActionsStyle
-      }, this.props.signal.branches.map(this.renderAction))
-    )
+    }, DOM.div({
+        style: {
+          overflowY: 'scroll',
+          height: '100%'
+        }
+      },
+        DOM.h2({
+          style: SignalStyle
+        },
+          DOM.span({
+            style: {
+              backgroundColor: '#' + intToRGB(hashCode(this.props.signal.name)),
+              display: 'inline-block',
+              width: 10,
+              height: 10,
+              marginRight: 5,
+              borderRadius: '50%',
+              border: '1px solid #333'
+            }
+          }),
+          DOM.span(null, this.props.signal.name),
+          this.props.signal.isSync ? DOM.small({
+            style: {
+              color: 'orange'
+            }
+          }, this.props.signal.isRouted ? ' routed' : ' sync') : null
+        ),
+        DOM.ul({
+          style: ActionsStyle
+        }, this.props.signal.branches.map(this.renderAction))
+      )
+    );
   }
 });

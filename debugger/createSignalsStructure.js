@@ -18,7 +18,9 @@ function createSignalsStructure(signals) {
 
       // If is action with other signals
       if (branch.signals) {
-        signals = signals.concat(findSignals(branch.signals));
+        signals = branch.signals.reduce(function (signals, signal) {
+          return signals.concat(signal).concat(findSignals(signal.branches));
+        }, signals)
       }
 
       // Return by checking any output path
@@ -32,7 +34,7 @@ function createSignalsStructure(signals) {
   };
 
   return signals.map(function (signal) {
-    return [signal].concat(findSignals(signal.branches));
-  });
+    return [signal].concat(findSignals(signal.branches)).reverse();
+  }).reverse();
 
 }
