@@ -4,7 +4,7 @@
 
 // Create a tab in the devtools area
 var hasListener = false;
-chrome.devtools.panels.create("Cerebral", "toast.png", "panel.html", function(panel) {
+chrome.devtools.panels.create("Cerebral", "toast.png", "index.html", function(panel) {
 
   /*
   panel.onShown.addListener(function () {

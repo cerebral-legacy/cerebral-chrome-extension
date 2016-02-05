@@ -22,6 +22,7 @@
   script.parentNode.removeChild(script);
 
 	var initialized = function (event) {
+
 		if (CEREBRAL_INIT) {
 			chrome.extension.sendMessage(event.detail, function(message){});
 			return;
