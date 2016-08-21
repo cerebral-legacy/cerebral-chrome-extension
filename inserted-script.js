@@ -24,13 +24,13 @@
 	var initialized = function (event) {
 
 		if (CEREBRAL_INIT) {
-			chrome.extension.sendMessage(event.detail, function(message){});
+			chrome.extension.sendMessage(event.detail);
 			return;
 		}
 
 		CEREBRAL_INIT = true;
 
-		chrome.extension.sendMessage(event.detail, function(message){});
+		chrome.extension.sendMessage(event.detail);
 
 		var update = function (event) {
 			if (!event.detail) {
@@ -38,7 +38,7 @@
 				return;
 			}
 			try {
-				chrome.extension.sendMessage(event.detail, function(message){});
+				chrome.extension.sendMessage(event.detail);
 			} catch (e) {
 				console.log('FAILED', e);
 				window.removeEventListener('cerebral.dev.update', update);
